@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wordle - Daily & Infinite</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Inline styles to prevent flash of wrong theme */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+      }
+      html.light,
+      html.light body {
+        background-color: #ffffff !important;
+        color: #111827;
+      }
+      html.dark,
+      html.dark body {
+        background-color: #111827 !important;
+        color: #f3f4f6;
+      }
+    </style>
+    <script>
+      // Set theme immediately before React loads to prevent flash
+      (function () {
+        function applyThemeToDOM(theme) {
+          document.documentElement.classList.remove("light", "dark");
+          document.documentElement.classList.add(theme);
+          document.documentElement.setAttribute("data-theme", theme);
+        }
+
+        // Check localStorage first, then default to dark
+        var savedTheme = null;
+        try {
+          savedTheme = localStorage.getItem("wordle-theme");
+        } catch (e) {}
+
+        var theme = (savedTheme === "light" || savedTheme === "dark") ? savedTheme : "dark";
+        applyThemeToDOM(theme);
+
+        // Listen for parent window theme messages (for iframe environments)
+        window.addEventListener("message", function (event) {
+          if (event.data && typeof event.data.theme === "string") {
+            if (event.data.theme === "light" || event.data.theme === "dark") {
+              applyThemeToDOM(event.data.theme);
+            }
+          }
+        });
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
